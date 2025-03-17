@@ -78,4 +78,18 @@ impl DatReader {
 
         Ok(BinaryReader::new(buffer))
     }
+
+    pub fn get_binary_file_u32(&mut self, data_id: u32) -> io::Result<BinaryReader> {
+        let id = DataId::new(data_id);
+        Ok(self.get_binary_file(&id)?)
+    }
+
+    pub fn get_binary_file(&mut self, data_id: &DataId) -> io::Result<BinaryReader> {
+        if let Some(file) = self.file_list.get(data_id) {
+            let binary_file = self.get_file_raw(file.offset as u64, file.size as u64)?;
+            Ok(binary_file)
+        } else {
+            Err(io::Error::new(io::ErrorKind::NotFound, "DataId not found"))
+        }
+    }
 }

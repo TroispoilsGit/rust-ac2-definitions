@@ -1,7 +1,8 @@
 use std::{io::SeekFrom, mem};
 
 use crate::{
-    DatReader, constantes::static_const::MAX_NUM_CHILDREN, extensions::binary_reader::BinaryReader,
+    DatReader, constantes::static_const::MAX_NUM_CHILDREN, custome_types::data_id::DataId,
+    extensions::binary_reader::BinaryReader,
 };
 
 use super::node_entry::NodeEntry;
@@ -25,7 +26,7 @@ impl TreeNode {
         };
 
         let node_children_size: u64 = mem::size_of::<u32>() as u64 * MAX_NUM_CHILDREN;
-        let pos_new_test: u64 = offset as u64 + mem::size_of::<u32>() as u64 + &node_children_size;
+        let pos_new_test: u64 = offset as u64 + mem::size_of::<u32>() as u64 + node_children_size;
 
         dat_reader
             .data
@@ -33,7 +34,7 @@ impl TreeNode {
             .expect("Seek issue");
         let num_entries = dat_reader.data.read_u32().expect("read_u32 issue");
         let mut num_children = num_entries + 1;
-        let node_file_size = &node_children_size
+        let node_file_size = node_children_size
             + mem::size_of::<u32>() as u64
             + (mem::size_of::<u32>() * 4) as u64 * u64::from(num_entries);
 
@@ -69,6 +70,13 @@ impl TreeNode {
         match add_entries(&mut geting_file_raw, num_entries) {
             Ok(v) => {
                 tree_node.entry = Some(v);
+                tree_node.entry.iter().for_each(|value| {
+                    for entry in value {
+                        dat_reader
+                            .file_list
+                            .insert(DataId::new(entry.did), entry.clone());
+                    }
+                });
             }
             Err(e) => {
                 println!(

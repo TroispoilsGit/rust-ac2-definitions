@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize)]
 pub struct DataId {
     id: u32,
 }
