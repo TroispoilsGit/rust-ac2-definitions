@@ -1,15 +1,24 @@
 use std::{
-    cmp::min, collections::HashMap, fs::File, io::{self, Read, SeekFrom}, mem
+    cmp::min,
+    collections::HashMap,
+    fs::File,
+    io::{self, Read, SeekFrom},
+    mem,
 };
 
-use crate::{dat_header::DatHeader, extensions::binary_reader::BinaryReader, tree::{node_entry::NodeEntry, node_tree::TreeNode}};
+use crate::{
+    custome_types::data_id::DataId,
+    dat_header::DatHeader,
+    extensions::binary_reader::BinaryReader,
+    tree::{node_entry::NodeEntry, node_tree::TreeNode},
+};
 
 pub struct DatReader {
     pub path_file: String,
     pub header: DatHeader,
     pub data: BinaryReader,
     pub tree: Option<TreeNode>,
-    pub file_list: HashMap<u32, NodeEntry>,
+    pub file_list: HashMap<DataId, NodeEntry>,
 }
 
 impl DatReader {
