@@ -18,8 +18,8 @@ impl CLandBlockData {
         let data_did = data.read_dataid()?;
         let land_block_info_did = data.read_dataid()?;
         let path_map_did = data.read_dataid()?;
-        let heights = data.read_list::<u8>()?;
-        let cell_infos = data.read_list::<u32>()?;
+        let heights = data.read_list(|d| d.read_u8(), 4)?;
+        let cell_infos = data.read_list(|d| d.read_u32(), 4)?;
 
         Ok(CLandBlockData {
             data_did,

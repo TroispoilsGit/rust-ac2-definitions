@@ -61,35 +61,45 @@ impl BinaryReader {
         Ok(buffer != 0)
     }
 
-    pub fn read_list<T>(&mut self) -> io::Result<Vec<T>>
+    pub fn read_list<T, F>(
+        &mut self,
+        mut element_reader: F,
+        size_of_size: u32,
+    ) -> Result<Vec<T>, io::Error>
     where
-        T: TryFrom<u8> + TryFrom<u16> + TryFrom<u32> + TryFrom<u64>,
-        <T as TryFrom<u8>>::Error: std::fmt::Debug,
-        <T as TryFrom<u16>>::Error: std::fmt::Debug,
-        <T as TryFrom<u32>>::Error: std::fmt::Debug,
-        <T as TryFrom<u64>>::Error: std::fmt::Debug,
+        F: FnMut(&mut Self) -> Result<T, io::Error>,
     {
-        let size_list = self.read_u32()?;
-        let mut list = Vec::with_capacity(size_list as usize);
-
-        for _ in 0..size_list {
-            let value: T = match std::any::type_name::<T>() {
-                "u8" => self.read_u8()?.try_into().expect("Conversion failed"),
-                "u16" => self.read_u16()?.try_into().expect("Conversion failed"),
-                "u32" => self.read_u32()?.try_into().expect("Conversion failed"),
-                "u64" => self.read_u64()?.try_into().expect("Conversion failed"),
-                _ => {
-                    return Err(io::Error::new(
-                        io::ErrorKind::InvalidData,
-                        "Unsupported type",
-                    ));
-                }
-            };
-
-            list.push(value);
-        }
-
+        let mut list = Vec::new();
+        self.read_list_into(&mut list, &mut element_reader, size_of_size)?;
         Ok(list)
+    }
+
+    fn read_list_into<T, F>(
+        &mut self,
+        list: &mut Vec<T>,
+        element_reader: &mut F,
+        size_of_size: u32,
+    ) -> Result<(), io::Error>
+    where
+        F: FnMut(&mut Self) -> Result<T, io::Error>,
+    {
+        let num_elements = match size_of_size {
+            1 => self.read_u8()? as u32,
+            2 => self.read_u16()? as u32,
+            4 => self.read_u32()?,
+            _ => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "Invalid size_of_size",
+                ));
+            }
+        };
+
+        list.reserve(num_elements as usize);
+        for _ in 0..num_elements {
+            list.push(element_reader(self)?);
+        }
+        Ok(())
     }
 
     pub fn file_to_vec_u3_to_string(&mut self) -> String {
