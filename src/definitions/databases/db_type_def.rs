@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::sync::OnceLock;
+use std::{collections::HashMap, sync::OnceLock};
 
 use crate::types::data_id::DataId;
 
@@ -125,50 +124,39 @@ impl FileDef {
     }
 }
 
-pub struct TypeDefFile {
-    // Référence à notre static file_type
-}
+pub struct TypeDefFile;
 
 impl TypeDefFile {
-    // Fonction pour accéder au static file_type
     pub fn file_type() -> &'static HashMap<DbType, FileDef> {
         static FILE_TYPE: OnceLock<HashMap<DbType, FileDef>> = OnceLock::new();
         FILE_TYPE.get_or_init(|| {
             let mut map = HashMap::new();
-
-            // Initialisation des mappings
             map.insert(DbType::Landblockdata, FileDef::new(0, 0, DatType::CELL));
             map
         })
     }
 
     pub fn new() -> Self {
-        TypeDefFile {}
+        TypeDefFile
     }
 
-    pub fn get_db_type_from_data_id(did: DataId) -> DbType {
-        Self::get_db_type_from_u32(did.id())
+    pub fn get_db_type_from_data_id(did: &DataId) -> DbType {
+        Self::get_db_type_from_u32(&did.id()) // Passage direct sans variable intermédiaire
     }
 
-    pub fn get_db_type_from_u32(did: u32) -> DbType {
+    pub fn get_db_type_from_u32(did: &u32) -> DbType {
         let file_type = Self::file_type();
-        let mut db_type = DbType::Undefined;
-        let mut dat_type = DatType::PORTAL;
+
         for (db_type_key, file_def) in file_type.iter() {
-            if file_def.start_did <= did && did <= file_def.end_did {
-                db_type = *db_type_key;
-                dat_type = file_def.dat_type;
+            if file_def.start_did <= *did && *did <= file_def.end_did {
+                return *db_type_key;
             }
         }
 
-        if dat_type == DatType::CELL {
-            let end = did & 0xFFFF;
-            match end {
-                0xFFFF => db_type = DbType::Landblockdata,
-                _ => db_type = DbType::Undefined,
-            }
+        let end = did & 0xFFFF;
+        match end {
+            0xFFFF => DbType::Landblockdata,
+            _ => DbType::Undefined,
         }
-
-        db_type
     }
 }

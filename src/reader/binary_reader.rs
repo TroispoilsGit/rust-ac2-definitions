@@ -104,7 +104,7 @@ impl BinaryReader {
         Ok(())
     }
 
-    fn read_enum<T>(&mut self) -> io::Result<T>
+    pub fn read_enum<T>(&mut self) -> io::Result<T>
     where
         T: FromPrimitive,
     {
@@ -118,7 +118,7 @@ impl BinaryReader {
         }
     }
 
-    fn read_enum_with_default<T>(&mut self, default: T) -> io::Result<T>
+    pub fn read_enum_with_default<T>(&mut self, default: T) -> io::Result<T>
     where
         T: FromPrimitive,
     {
