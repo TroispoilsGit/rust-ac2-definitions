@@ -7,6 +7,7 @@ name = "ac2_definition"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "num-traits",
  "serde",
  "serde_json",
 ]

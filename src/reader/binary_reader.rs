@@ -1,5 +1,7 @@
 use std::io::{self, Cursor, Read, Seek};
 
+use num_traits::FromPrimitive;
+
 use crate::types::data_id::DataId;
 
 pub struct BinaryReader {
@@ -100,6 +102,28 @@ impl BinaryReader {
             list.push(element_reader(self)?);
         }
         Ok(())
+    }
+
+    fn read_enum<T>(&mut self) -> io::Result<T>
+    where
+        T: FromPrimitive,
+    {
+        let value = self.read_u32()?;
+        match T::from_u32(value) {
+            Some(variant) => Ok(variant),
+            None => Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Invalid enum value: {}", value),
+            )),
+        }
+    }
+
+    fn read_enum_with_default<T>(&mut self, default: T) -> io::Result<T>
+    where
+        T: FromPrimitive,
+    {
+        let value = self.read_u32()?;
+        Ok(T::from_u32(value).unwrap_or(default))
     }
 
     pub fn file_to_vec_u3_to_string(&mut self) -> String {
