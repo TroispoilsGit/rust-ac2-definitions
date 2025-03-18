@@ -7,10 +7,10 @@ use std::{
 };
 
 use crate::{
-    custome_types::data_id::DataId,
-    dat_header::DatHeader,
-    extensions::binary_reader::BinaryReader,
+    definitions::header::dat_header::DatHeader,
+    reader::binary_reader::BinaryReader,
     tree::{node_entry::NodeEntry, node_tree::TreeNode},
+    types::data_id::DataId,
 };
 
 pub struct DatReader {

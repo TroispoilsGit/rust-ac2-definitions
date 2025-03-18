@@ -1,6 +1,6 @@
 use chrono::{TimeZone, Utc};
 
-use crate::extensions::binary_reader::BinaryReader;
+use crate::reader::binary_reader::BinaryReader;
 
 #[derive(Debug, Copy, Clone)]
 pub struct NodeEntry {

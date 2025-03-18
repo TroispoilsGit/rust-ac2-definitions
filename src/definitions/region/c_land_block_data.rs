@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::io::Error;
 
-use crate::{custome_types::data_id::DataId, extensions::binary_reader::BinaryReader};
+use crate::{reader::binary_reader::BinaryReader, types::data_id::DataId};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]

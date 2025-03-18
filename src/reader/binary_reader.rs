@@ -1,6 +1,6 @@
 use std::io::{self, Cursor, Read, Seek};
 
-use crate::custome_types::data_id::DataId;
+use crate::types::data_id::DataId;
 
 pub struct BinaryReader {
     cursor: Cursor<Vec<u8>>,

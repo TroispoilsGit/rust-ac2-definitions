@@ -1,5 +1,4 @@
-
-use crate::extensions::binary_reader::BinaryReader;
+use crate::reader::binary_reader::BinaryReader;
 
 #[derive(Debug)]
 pub struct DatHeader {

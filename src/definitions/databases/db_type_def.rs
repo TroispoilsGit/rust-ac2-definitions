@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
-use crate::custome_types::data_id::DataId;
+use crate::types::data_id::DataId;
 
 #[derive(Hash, Eq, PartialEq, Clone, Copy, Debug)]
 pub enum DatType {
