@@ -2,7 +2,9 @@ use std::io::{self, Cursor, Read, Seek};
 
 use num_traits::FromPrimitive;
 
-use crate::types::{data_id::DataId, quaternion::Quaternion, vector3::Vector3};
+use crate::types::{
+    data_id::DataId, quaternion::Quaternion, rgba_color::RGBAColor, vector3::Vector3,
+};
 
 pub struct BinaryReader {
     cursor: Cursor<Vec<u8>>,
@@ -155,5 +157,23 @@ impl BinaryReader {
         let z = self.read_f32()?;
         let w = self.read_f32()?;
         Ok(Quaternion::new(x, y, z, w))
+    }
+
+    pub fn read_i32(&mut self) -> io::Result<i32> {
+        let mut buffer = [0; 4];
+        self.cursor.read_exact(&mut buffer)?;
+        Ok(i32::from_le_bytes(buffer))
+    }
+
+    pub fn read_color(&mut self) -> io::Result<RGBAColor> {
+        todo!()
+    }
+
+    pub fn read_string(&mut self) -> _ {
+        todo!()
+    }
+
+    pub fn read_i64(&mut self) -> _ {
+        todo!()
     }
 }
