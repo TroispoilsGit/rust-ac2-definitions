@@ -1,6 +1,6 @@
 use crate::{
     data_id::DataId,
-    types::{matrix_4x4::Matrix4x4, vector_3::Vector3},
+    types::{matrix4x4::Matrix4x4, vector3::Vector3},
 };
 
 use super::enums::entity_type::EntityType;

@@ -2,7 +2,7 @@ use std::io::{self, Cursor, Read, Seek};
 
 use num_traits::FromPrimitive;
 
-use crate::types::data_id::DataId;
+use crate::types::{data_id::DataId, quaternion::Quaternion, vector3::Vector3};
 
 pub struct BinaryReader {
     cursor: Cursor<Vec<u8>>,
@@ -134,5 +134,26 @@ impl BinaryReader {
             result.push_str(&format!("{:08x}\n", value));
         }
         result
+    }
+
+    pub fn read_vector3(&mut self) -> io::Result<Vector3> {
+        let x = self.read_f32()?;
+        let y = self.read_f32()?;
+        let z = self.read_f32()?;
+        Ok(Vector3::new(x, y, z))
+    }
+
+    pub fn read_f32(&mut self) -> io::Result<f32> {
+        let mut buffer = [0; 4];
+        self.cursor.read_exact(&mut buffer)?;
+        Ok(f32::from_le_bytes(buffer))
+    }
+
+    pub fn read_quaternion(&mut self) -> io::Result<Quaternion> {
+        let x = self.read_f32()?;
+        let y = self.read_f32()?;
+        let z = self.read_f32()?;
+        let w = self.read_f32()?;
+        Ok(Quaternion::new(x, y, z, w))
     }
 }
