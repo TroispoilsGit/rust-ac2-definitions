@@ -1,9 +1,13 @@
 use std::io;
 
+use serde::{Deserialize, Serialize};
+
 use crate::reader::binary_reader::BinaryReader;
 
 use super::{entity_desc::EntityDesc, entity_link_desc::EntityLinkDesc};
 
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
 pub struct EntityGroupDesc {
     pub entities: Vec<EntityDesc>,
     pub links: Vec<EntityLinkDesc>,

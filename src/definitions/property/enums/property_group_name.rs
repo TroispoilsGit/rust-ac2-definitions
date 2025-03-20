@@ -1,6 +1,7 @@
 use num_derive::FromPrimitive;
+use serde::{Deserialize, Serialize};
 
-#[derive(Hash, Eq, PartialEq, Debug, Clone, Copy, FromPrimitive)]
+#[derive(Serialize, Deserialize, Hash, Eq, PartialEq, Debug, Clone, Copy, FromPrimitive)]
 pub enum PropertyGroupName {
     Invalid = 0, // Invalid_PropertyGroupName
 

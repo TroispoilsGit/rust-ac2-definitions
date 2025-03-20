@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::io::{self};
 use std::sync::{Arc, OnceLock};
 
+use serde::{Deserialize, Serialize};
+
 use crate::DatReader;
 use crate::data_id::DataId;
 use crate::enum_map::enum_mapper::EnumMapper;
@@ -13,10 +15,10 @@ use super::enums::property_name::PropertyName;
 static INSTANCE: OnceLock<Arc<MasterProperty>> = OnceLock::new();
 static MASTER_PROPERTY_DID: u32 = 0x34000000;
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MasterProperty {
     pub did: DataId,                                         // m_DID
-    pub enum_mapper: EnumMapper,                             // m_emapper
+    pub enum_mapper: Option<EnumMapper>,                     // m_emapper
     pub properties: HashMap<PropertyName, BasePropertyDesc>, // m_properties
 }
 
@@ -25,17 +27,20 @@ impl MasterProperty {
     pub fn load_master_properties(dat_reader: &mut DatReader) {
         INSTANCE.get_or_init(|| {
             let mut data = dat_reader.get_binary_file_u32(MASTER_PROPERTY_DID).unwrap();
-            Arc::new(MasterProperty::new(&mut data).unwrap())
+            Arc::new(MasterProperty::new(&mut data).expect("issue"))
         });
     }
 
     // Constructeur à partir d'un lecteur
     pub fn new(data: &mut BinaryReader) -> io::Result<Self> {
         let did = data.read_dataid()?;
-        let enum_mapper = EnumMapper::new(data)?;
+        let enum_mapper = match EnumMapper::new(data) {
+            Ok(d) => Some(d),
+            Err(_) => None,
+        };
         let mut properties = HashMap::new();
 
-        let num_elements = data.read_u16().unwrap();
+        let num_elements = data.read_u16()?;
         let _table_size = data.read_u16(); // Ignoré pour l'instant, mais tu peux l'utiliser si nécessaire
 
         properties.reserve(num_elements as usize); // Équivalent de `EnsureCapacity` en C#

@@ -1,5 +1,7 @@
 use std::io;
 
+use serde::{Deserialize, Serialize};
+
 use crate::{
     data_id::DataId,
     property::property_collection::PropertyCollection,
@@ -12,7 +14,7 @@ use crate::{
 use super::enums::entity_type::EntityType;
 
 #[repr(u32)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 pub enum PackFlag {
     NONE = 0,
     DATABASE = 1 << 0,   // DATABASE 0x00000001
@@ -32,6 +34,8 @@ impl From<PackFlag> for u32 {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
 pub struct EntityDesc {
     pub pack_flags: u32,
     pub did: DataId,

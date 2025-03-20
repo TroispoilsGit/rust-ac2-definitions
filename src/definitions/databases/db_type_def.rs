@@ -156,6 +156,7 @@ impl TypeDefFile {
         let end = did & 0xFFFF;
         match end {
             0xFFFF => DbType::Landblockdata,
+            0xFFFE => DbType::Landblockinfo,
             _ => DbType::Undefined,
         }
     }

@@ -1,8 +1,10 @@
 use std::{collections::HashMap, io};
 
+use serde::{Deserialize, Serialize};
+
 use crate::{data_id::DataId, reader::binary_reader::BinaryReader};
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct EnumMapper {
     pub did: DataId,
     pub base_enum_mapper_did: DataId,

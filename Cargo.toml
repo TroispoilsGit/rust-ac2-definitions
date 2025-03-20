@@ -9,3 +9,5 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "*"
 num-traits = "0.2.19"
 num-derive = "*"
+strum = "*"
+strum_macros = "*"

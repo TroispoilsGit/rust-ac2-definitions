@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 use super::string_info::StringInfo;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 enum DataType {
     Undef = 0,
 
@@ -18,7 +20,7 @@ enum DataType {
     FormattedULInt = 13, // SID_Type_FormattedULInt
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 enum DataValue {
     Int(i32),
     Double(f64),
@@ -29,7 +31,7 @@ enum DataValue {
     StringInfo(StringInfo),
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct StringInfoData {
     pub types: DataType,
     pub value: DataValue,

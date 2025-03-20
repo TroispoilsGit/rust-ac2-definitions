@@ -182,21 +182,41 @@ impl BinaryReader {
     }
 
     pub fn read_string(&mut self, encoding: Encoding) -> io::Result<String> {
-        let num_char = self.read_u16()?;
-        let mut buffer: Vec<u8> = Vec::new();
+        let num_char = self.read_u16().map_err(|e| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Failed to read num_char: {}", e),
+            )
+        })?;
+
         if num_char == 0 {
             self.align(4);
             return Ok(String::new());
         }
-        let lenght = num_char as usize * encoding.max_bytes_per_char();
-        buffer.resize(lenght, 0);
-        for i in 0..num_char {
-            buffer[i as usize] = self.read_u8()?;
-        }
+
+        let length = encoding.max_bytes_per_char() * num_char as usize;
+        let mut buffer = self.read_bytes(length).map_err(|e| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Failed to read bytes: {}", e),
+            )
+        })?;
+
         self.align(4);
-        let len = buffer.len();
-        AC2Crypto::decrypt(&mut buffer, 0, len);
+        AC2Crypto::decrypt(&mut buffer, 0, length);
+
         Ok(encoding.decode(&buffer))
+    }
+
+    pub fn read_bytes(&mut self, length: usize) -> io::Result<Vec<u8>> {
+        let mut buffer = vec![0; length];
+        self.read_exact(&mut buffer).map_err(|e| {
+            io::Error::new(
+                io::ErrorKind::UnexpectedEof,
+                format!("Failed to read {} bytes: {}", length, e),
+            )
+        })?;
+        Ok(buffer)
     }
 
     pub fn read_i64(&mut self) -> io::Result<i64> {
@@ -206,19 +226,47 @@ impl BinaryReader {
     }
 
     pub fn align(&mut self, bytes: u64) {
-        let align_delta = bytes - (self.cursor.position() % bytes);
-        self.cursor.seek(SeekFrom::Current(align_delta as i64));
+        let align_delta = self.cursor.position() % bytes;
+        if align_delta != 0 {
+            self.cursor
+                .seek(SeekFrom::Current(bytes as i64 - align_delta as i64))
+                .expect("Issue with align");
+        }
     }
 
     pub fn read_string_map(&mut self) -> io::Result<HashMap<u32, String>> {
-        let num_entries = self.read_u16()?;
-        let _table_size = self.read_u16()?;
+        let num_entries = self.read_u16().map_err(|e| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Failed to read num_entries: {}", e),
+            )
+        })?;
+        let _table_size = self.read_u16().map_err(|e| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Failed to read table_size: {}", e),
+            )
+        })?;
         let mut map = HashMap::with_capacity(num_entries as usize);
+
         for _ in 0..num_entries {
-            let key = self.read_u32()?;
-            let value = self.read_string(Encoding::new(EncodingType::Utf8))?;
+            let key = self.read_u32().map_err(|e| {
+                io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    format!("Failed to read key: {}", e),
+                )
+            })?;
+            let value = self
+                .read_string(Encoding::new(EncodingType::Ascii))
+                .map_err(|e| {
+                    io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        format!("Failed to read string value: {}", e),
+                    )
+                })?;
             map.insert(key, value);
         }
+
         Ok(map)
     }
 

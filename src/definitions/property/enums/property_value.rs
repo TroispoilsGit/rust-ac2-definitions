@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{
     data_id::DataId,
     geometry::{position::Position, waveform::Waveform},
@@ -5,7 +7,7 @@ use crate::{
     types::{rgba_color::RGBAColor, vector3::Vector3},
 };
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub enum PropertyValue {
     Bool(bool),
     Integer(i32),

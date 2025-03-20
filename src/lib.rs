@@ -6,6 +6,7 @@ mod types;
 mod utils;
 
 pub use definitions::*;
+pub use property::master_property::MasterProperty;
 pub use reader::dat_reader::DatReader;
 pub use types::data_id;
 

@@ -1,10 +1,12 @@
 use std::io;
 
+use serde::{Deserialize, Serialize};
+
 use crate::reader::binary_reader::BinaryReader;
 
 use super::frame::Frame;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Position {
     pub cell: u32, //TODO: cellid
     pub frame: Frame,

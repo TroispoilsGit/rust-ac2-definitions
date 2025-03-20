@@ -4,17 +4,18 @@ use serde::{Deserialize, Serialize};
 
 use crate::reader::binary_reader::BinaryReader;
 
-use super::property_group::PropertyGroup;
-
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
-pub struct PropertyCollection {
-    pub groups: Vec<PropertyGroup>,
+pub struct LinkDesc {
+    pub id: i64,
+    pub types: u32,
 }
 
-impl PropertyCollection {
+impl LinkDesc {
     pub fn new(data: &mut BinaryReader) -> io::Result<Self> {
-        let groups = data.read_list(|d| PropertyGroup::new(d), 4)?;
-        Ok(Self { groups })
+        Ok(Self {
+            id: data.read_i64()?,
+            types: data.read_u32()?,
+        })
     }
 }

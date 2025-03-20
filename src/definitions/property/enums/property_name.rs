@@ -1,6 +1,9 @@
 use num_derive::FromPrimitive;
+use serde::{Deserialize, Serialize};
 
-#[derive(Hash, Eq, PartialEq, Debug, Clone, FromPrimitive)]
+#[derive(
+    Serialize, Deserialize, Hash, Eq, PartialEq, Debug, Clone, FromPrimitive, strum_macros::Display,
+)]
 pub enum PropertyName {
     Undef = 0,
 

@@ -1,5 +1,7 @@
 use std::io;
 
+use serde::{Deserialize, Serialize};
+
 use crate::reader::binary_reader::BinaryReader;
 
 use super::enums::{
@@ -7,7 +9,7 @@ use super::enums::{
     weenie_report_type::WeenieReportType,
 };
 
-#[derive(Hash, Eq, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, Hash, Eq, PartialEq, Debug, Clone)]
 pub struct BasePropertyDesc {
     pub types: PropertyType,
     pub group: PropertyGroupName,

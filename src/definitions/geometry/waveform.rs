@@ -1,10 +1,11 @@
 use std::io;
 
 use num_derive::FromPrimitive;
+use serde::{Deserialize, Serialize};
 
 use crate::reader::binary_reader::BinaryReader;
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Debug, FromPrimitive, Serialize, Deserialize)]
 pub enum WaveformType {
     INVALID = 0,   // WAVEFORM_INVALID
     NONE = 1,      // WAVEFORM_NONE
@@ -19,7 +20,7 @@ pub enum WaveformType {
     NUM = 10,      // NUM_WAVEFORMS
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Waveform {
     pub types: WaveformType,
     pub base_value: f32,

@@ -1,10 +1,12 @@
 use std::{collections::HashMap, io};
 
+use serde::{Deserialize, Serialize};
+
 use crate::{data_id::DataId, reader::binary_reader::BinaryReader, types::string_id::StringId};
 
 use super::string_info_data::StringInfoData;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct StringInfo {
     pub string_id: StringId,
     pub table_id: DataId,
