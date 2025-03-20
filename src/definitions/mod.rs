@@ -1,5 +1,7 @@
+pub mod crypto;
 pub mod databases;
 pub mod entity;
+pub mod enum_map;
 pub mod geometry;
 pub mod header;
 pub mod property;

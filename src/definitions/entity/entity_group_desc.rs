@@ -1,3 +1,7 @@
+use std::io;
+
+use crate::reader::binary_reader::BinaryReader;
+
 use super::{entity_desc::EntityDesc, entity_link_desc::EntityLinkDesc};
 
 pub struct EntityGroupDesc {
@@ -6,10 +10,9 @@ pub struct EntityGroupDesc {
 }
 
 impl EntityGroupDesc {
-    pub fn new() -> Self {
-        EntityGroupDesc {
-            entities: Vec::new(),
-            links: Vec::new(),
-        }
+    pub fn new(data: &mut BinaryReader) -> io::Result<Self> {
+        let entities = data.read_list(|d| EntityDesc::new(d), 4)?;
+        let links = data.read_list(|d| EntityLinkDesc::new(d), 4)?;
+        Ok(EntityGroupDesc { entities, links })
     }
 }

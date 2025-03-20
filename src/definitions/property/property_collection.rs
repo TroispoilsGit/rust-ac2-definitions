@@ -1,3 +1,7 @@
+use std::io;
+
+use crate::reader::binary_reader::BinaryReader;
+
 use super::property_group::PropertyGroup;
 
 pub struct PropertyCollection {
@@ -5,7 +9,8 @@ pub struct PropertyCollection {
 }
 
 impl PropertyCollection {
-    pub fn new(groups: Vec<PropertyGroup>) -> Self {
-        Self { groups }
+    pub fn new(data: &mut BinaryReader) -> io::Result<Self> {
+        let groups = data.read_list(|d| PropertyGroup::new(d), 4)?;
+        Ok(Self { groups })
     }
 }

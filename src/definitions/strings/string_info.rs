@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, io};
 
 use crate::{data_id::DataId, reader::binary_reader::BinaryReader, types::string_id::StringId};
 
@@ -12,12 +12,12 @@ pub struct StringInfo {
     pub literal_value: String,
 }
 impl StringInfo {
-    pub fn new(data: &mut BinaryReader) -> Self {
-        Self {
+    pub fn new(data: &mut BinaryReader) -> io::Result<Self> {
+        Ok(Self {
             string_id: todo!(),
             table_id: todo!(),
             variables: todo!(),
             literal_value: todo!(),
-        }
+        })
     }
 }

@@ -1,3 +1,6 @@
+use num_derive::FromPrimitive;
+
+#[derive(Hash, Eq, PartialEq, Debug, Clone, FromPrimitive)]
 pub enum EntityType {
     Invalid = 0, // Invalid_EntityType
 

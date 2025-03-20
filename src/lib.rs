@@ -3,6 +3,7 @@ mod definitions;
 mod reader;
 mod tree;
 mod types;
+mod utils;
 
 pub use definitions::*;
 pub use reader::dat_reader::DatReader;

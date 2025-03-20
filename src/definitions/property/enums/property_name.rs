@@ -1,6 +1,6 @@
 use num_derive::FromPrimitive;
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Hash, Eq, PartialEq, Debug, Clone, FromPrimitive)]
 pub enum PropertyName {
     Undef = 0,
 

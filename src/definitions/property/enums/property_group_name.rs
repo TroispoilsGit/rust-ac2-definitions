@@ -1,6 +1,6 @@
 use num_derive::FromPrimitive;
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Hash, Eq, PartialEq, Debug, Clone, Copy, FromPrimitive)]
 pub enum PropertyGroupName {
     Invalid = 0, // Invalid_PropertyGroupName
 
