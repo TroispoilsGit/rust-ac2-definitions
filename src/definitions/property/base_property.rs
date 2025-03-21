@@ -32,7 +32,6 @@ impl BaseProperty {
     pub fn new(data: &mut BinaryReader) -> io::Result<Self> {
         let name = data.read_enum::<PropertyName>()?;
         let master_property = MasterProperty::instance().expect("issue MasterProperty");
-        println!("{}", name);
         let base_property_desc = master_property
             .properties
             .get(&name)
