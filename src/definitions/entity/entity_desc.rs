@@ -15,7 +15,7 @@ use super::enums::entity_type::EntityType;
 
 #[repr(u32)]
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
-pub enum PackFlag {
+enum PackFlag {
     NONE = 0,
     DATABASE = 1 << 0,   // DATABASE 0x00000001
     TYPE = 1 << 1,       // TYPE 0x00000002

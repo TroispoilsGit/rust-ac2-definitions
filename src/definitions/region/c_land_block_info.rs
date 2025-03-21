@@ -30,19 +30,19 @@ impl CLandBlockInfo {
             Ok(entity) => Some(entity),
             Err(_) => None,
         };
-        /*let properties = match PropertyCollection::new(data) {
+        let properties = match PropertyCollection::new(data) {
             Ok(property) => Some(property),
             Err(_) => None,
         };
-        let outside_stab_list = data.read_list(|d| d.read_u32(), 4)?;*/
+        let outside_stab_list = data.read_list(|d| d.read_u32(), 4)?;
 
         Ok(Self {
             data_did,
             version,
-            entities: None,
-            properties: None,
+            entities,
+            properties,
             light_info_did,
-            outside_stab_list: Vec::new(),
+            outside_stab_list,
             num_cells,
         })
     }

@@ -140,24 +140,32 @@ impl TypeDefFile {
         TypeDefFile
     }
 
-    pub fn get_db_type_from_data_id(did: &DataId) -> DbType {
-        Self::get_db_type_from_u32(&did.id()) // Passage direct sans variable intermédiaire
+    pub fn get_db_type_from_data_id(dat_type: DatType, did: &DataId) -> DbType {
+        Self::get_db_type_from_u32(dat_type, &did.id()) // Passage direct sans variable intermédiaire
     }
 
-    pub fn get_db_type_from_u32(did: &u32) -> DbType {
+    pub fn get_db_type_from_u32(dat_type: DatType, did: &u32) -> DbType {
         let file_type = Self::file_type();
+        let mut db_type = DbType::Undefined;
 
         for (db_type_key, file_def) in file_type.iter() {
             if file_def.start_did <= *did && *did <= file_def.end_did {
-                return *db_type_key;
+                db_type = *db_type_key;
             }
         }
 
-        let end = did & 0xFFFF;
-        match end {
-            0xFFFF => DbType::Landblockdata,
-            0xFFFE => DbType::Landblockinfo,
-            _ => DbType::Undefined,
+        if db_type != DbType::Datfiledata {
+            if dat_type == DatType::CELL {
+                let end = did & 0xFFFF;
+                db_type = match end {
+                    0xFFFC => DbType::Lightinfo,
+                    0xFFFD => DbType::Pathmap,
+                    0xFFFE => DbType::Landblockinfo,
+                    0xFFFF => DbType::Landblockdata,
+                    _ => DbType::Envcell,
+                };
+            }
         }
+        db_type
     }
 }

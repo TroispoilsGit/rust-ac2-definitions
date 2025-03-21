@@ -107,6 +107,8 @@ impl BinaryReader {
             }
         };
 
+        println!("[DEBUG] Count list: {}", num_elements);
+
         list.reserve(num_elements as usize);
         for _ in 0..num_elements {
             list.push(element_reader(self)?);

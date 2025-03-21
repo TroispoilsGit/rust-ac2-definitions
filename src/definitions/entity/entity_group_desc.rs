@@ -15,6 +15,7 @@ pub struct EntityGroupDesc {
 
 impl EntityGroupDesc {
     pub fn new(data: &mut BinaryReader) -> io::Result<Self> {
+        _ = data.read_u32()?;
         let entities = data.read_list(|d| EntityDesc::new(d), 4)?;
         let links = data.read_list(|d| EntityLinkDesc::new(d), 4)?;
         Ok(EntityGroupDesc { entities, links })
