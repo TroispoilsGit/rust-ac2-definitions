@@ -10,7 +10,7 @@ use super::c_cell_portal::CCellPortal;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u32)]
-enum PackFlag {
+pub enum PackFlag {
     None = 0,
     SeenOutside = 1 << 0,   // ENVCELL_PACK_SEEN_OUTSIDE 0x00000001
     HasEntities = 1 << 1,   // ENVCELL_PACK_HAS_ENTITIES 0x00000002

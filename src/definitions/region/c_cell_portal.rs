@@ -2,8 +2,9 @@ use std::io;
 
 use crate::{reader::binary_reader::BinaryReader, utils::flags::Flags};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u32)]
+#[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 enum PackFlag {
     None = 0,
     ExactMatch = 1 << 0,    // CELLPORTAL_PACK_EXACT_MATCH 0x00000001
