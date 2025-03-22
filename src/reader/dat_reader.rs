@@ -1,6 +1,6 @@
 use std::{
     cmp::min,
-    collections::HashMap,
+    collections::BTreeMap,
     fs::File,
     io::{self, Read, SeekFrom},
     mem,
@@ -18,7 +18,7 @@ pub struct DatReader {
     pub header: DatHeader,
     pub data: BinaryReader,
     pub tree: Option<TreeNode>,
-    pub file_list: HashMap<DataId, NodeEntry>,
+    pub file_list: BTreeMap<DataId, NodeEntry>,
 }
 
 impl DatReader {
@@ -43,7 +43,7 @@ impl DatReader {
             header,
             data: reader,
             tree: None,
-            file_list: HashMap::new(),
+            file_list: BTreeMap::new(),
         })
     }
 
@@ -85,6 +85,7 @@ impl DatReader {
     }
 
     pub fn get_binary_file(&mut self, data_id: &DataId) -> io::Result<BinaryReader> {
+        // DataId implements Ord, so we can directly use it as a key in the BTreeMap
         if let Some(file) = self.file_list.get(data_id) {
             let binary_file = self.get_file_raw(file.offset as u64, file.size as u64)?;
             Ok(binary_file)

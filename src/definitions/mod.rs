@@ -4,6 +4,7 @@ pub mod entity;
 pub mod enum_map;
 pub mod geometry;
 pub mod header;
+pub mod material;
 pub mod property;
 pub mod region;
 pub mod strings;

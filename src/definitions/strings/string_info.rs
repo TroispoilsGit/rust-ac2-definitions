@@ -22,7 +22,7 @@ impl StringInfo {
         let table_id = data.read_dataid()?;
         let num_variables = data.read_u16()?;
         let literal_value = if data.read_u16()? != 0 {
-            data.read_string(Encoding::new(EncodingType::Ascii))?
+            data.read_string(Encoding::new(EncodingType::Unicode))?
         } else {
             String::new()
         };

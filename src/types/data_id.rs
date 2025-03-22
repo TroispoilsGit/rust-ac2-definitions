@@ -1,3 +1,5 @@
+use core::cmp::Ordering;
+
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 #[derive(Hash, Eq, PartialEq, Debug)]
@@ -18,6 +20,18 @@ impl DataId {
 impl Clone for DataId {
     fn clone(&self) -> Self {
         DataId { id: self.id }
+    }
+}
+
+impl Ord for DataId {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.id.cmp(&other.id)
+    }
+}
+
+impl PartialOrd for DataId {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
 
