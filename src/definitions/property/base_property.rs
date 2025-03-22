@@ -46,7 +46,7 @@ impl BaseProperty {
             PropertyType::Vector => Some(PropertyValue::Vector(data.read_vector3()?)),
             PropertyType::Color => Some(PropertyValue::Color(data.read_color()?)),
             PropertyType::String => Some(PropertyValue::String(
-                data.read_string(Encoding::new(EncodingType::Utf8))?,
+                data.read_string(Encoding::new(EncodingType::Ascii))?,
             )),
             PropertyType::Enum => Some(PropertyValue::Enum(data.read_u32()?)),
             PropertyType::DataFile => Some(PropertyValue::DataFile(data.read_dataid()?)),

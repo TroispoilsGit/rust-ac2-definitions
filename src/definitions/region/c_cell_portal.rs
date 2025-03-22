@@ -1,6 +1,8 @@
 use std::io;
 
-use crate::{reader::binary_reader::BinaryReader, utils::flags::Flags};
+use crate::{
+    reader::binary_reader::BinaryReader, types::local_cell_id::LocalCellId, utils::flags::Flags,
+};
 
 #[repr(u32)]
 #[derive(Debug, Clone, Copy)]
@@ -22,20 +24,20 @@ impl From<PackFlag> for u32 {
 pub struct CCellPortal {
     pub pack_flags: u16,
     pub portal_index: u16,
-    pub other_cell_id: u16, //TODO: class LocalCellID
+    pub other_cell_id: LocalCellId,
     pub other_portal_index: u16,
-    pub stab_list: Vec<u16>, //TODO: class LocalCellID
+    pub stab_list: Vec<LocalCellId>,
 }
 
 impl CCellPortal {
     pub fn new(data: &mut BinaryReader) -> io::Result<Self> {
         let pack_flags = data.read_u16()?;
         let portal_index = data.read_u16()?;
-        let other_cell_id = data.read_u16()?;
+        let other_cell_id = data.read_local_cellid()?;
         let other_portal_index = data.read_u16()?;
 
         let stab_list = if Flags::has_flag_enum16(pack_flags, PackFlag::StabList) {
-            let list = data.read_list(|b| b.read_u16(), 2)?;
+            let list = data.read_list(|b| b.read_local_cellid(), 2)?;
             data.align(4);
             list
         } else {

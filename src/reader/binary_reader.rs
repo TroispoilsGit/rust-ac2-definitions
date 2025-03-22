@@ -9,8 +9,8 @@ use crate::{
     crypto::ac2_crypto::AC2Crypto,
     strings::encoding::{Encoding, EncodingType},
     types::{
-        data_id::DataId, matrix4x4::Matrix4x4, quaternion::Quaternion, rgba_color::RGBAColor,
-        vector3::Vector3,
+        cell_id::CellId, data_id::DataId, local_cell_id::LocalCellId, matrix4x4::Matrix4x4,
+        quaternion::Quaternion, rgba_color::RGBAColor, vector3::Vector3,
     },
 };
 
@@ -50,6 +50,14 @@ impl BinaryReader {
         let mut buffer = [0; 4];
         self.cursor.read_exact(&mut buffer)?;
         Ok(u32::from_le_bytes(buffer))
+    }
+
+    pub fn read_cellid(&mut self) -> io::Result<CellId> {
+        Ok(CellId::new(self.read_u32()?))
+    }
+
+    pub fn read_local_cellid(&mut self) -> io::Result<LocalCellId> {
+        Ok(LocalCellId::new(self.read_u16()?))
     }
 
     pub fn read_u64(&mut self) -> io::Result<u64> {
@@ -301,5 +309,31 @@ impl BinaryReader {
                 ],
             ],
         })
+    }
+
+    pub fn read_multi_dictionary<K, V>(
+        &mut self,
+        mut key_reader: impl FnMut(&mut Self) -> io::Result<K>,
+        mut value_reader: impl FnMut(&mut Self) -> io::Result<V>,
+    ) -> io::Result<HashMap<K, Vec<V>>>
+    where
+        K: std::hash::Hash + Eq,
+    {
+        let count = self
+            .read_u16()
+            .expect("Erreur lors de la lecture de 'count'");
+        let _ = self.read_u16().expect("table size issue");
+        let mut dictionary: HashMap<K, Vec<V>> = HashMap::new();
+        dictionary = HashMap::with_capacity(count as usize);
+
+        for _ in 0..count {
+            let key = key_reader(self).expect("[read_multi_dictionary] key_reader issue");
+            let value = self
+                .read_list(|d| value_reader(d), 4)
+                .expect("[read_multi_dictionary] self.read_list(|d| value_reader(d), 4) issue");
+            dictionary.entry(key).insert_entry(value);
+        }
+
+        Ok(dictionary)
     }
 }
