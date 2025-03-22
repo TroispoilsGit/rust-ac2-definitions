@@ -10,7 +10,7 @@ use crate::{
     strings::encoding::{Encoding, EncodingType},
     types::{
         cell_id::CellId, data_id::DataId, local_cell_id::LocalCellId, matrix4x4::Matrix4x4,
-        quaternion::Quaternion, rgba_color::RGBAColor, vector3::Vector3,
+        quaternion::Quaternion, rgba_color::RGBAColor, string_id::StringId, vector3::Vector3,
     },
 };
 
@@ -68,6 +68,9 @@ impl BinaryReader {
 
     pub fn read_dataid(&mut self) -> io::Result<DataId> {
         Ok(DataId::new(self.read_u32()?))
+    }
+    pub fn read_stringid(&mut self) -> io::Result<StringId> {
+        Ok(StringId::new(self.read_u32()?))
     }
 
     pub fn read_u16(&mut self) -> io::Result<u16> {
@@ -138,6 +141,20 @@ impl BinaryReader {
         }
     }
 
+    pub fn read_enum16<T>(&mut self) -> io::Result<T>
+    where
+        T: FromPrimitive,
+    {
+        let value = self.read_u16()?;
+        match T::from_u16(value) {
+            Some(variant) => Ok(variant),
+            None => Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Invalid enum value: {}", value),
+            )),
+        }
+    }
+
     pub fn read_enum_with_default<T>(&mut self, default: T) -> io::Result<T>
     where
         T: FromPrimitive,
@@ -167,6 +184,12 @@ impl BinaryReader {
         let mut buffer = [0; 4];
         self.cursor.read_exact(&mut buffer)?;
         Ok(f32::from_le_bytes(buffer))
+    }
+
+    pub fn read_f64(&mut self) -> io::Result<f64> {
+        let mut buffer = [0; 8];
+        self.cursor.read_exact(&mut buffer)?;
+        Ok(f64::from_le_bytes(buffer))
     }
 
     pub fn read_quaternion(&mut self) -> io::Result<Quaternion> {
@@ -309,6 +332,30 @@ impl BinaryReader {
                 ],
             ],
         })
+    }
+
+    pub fn read_dictionary<K, V>(
+        &mut self,
+        mut key_reader: impl FnMut(&mut Self) -> io::Result<K>,
+        mut value_reader: impl FnMut(&mut Self) -> io::Result<V>,
+    ) -> io::Result<HashMap<K, V>>
+    where
+        K: std::hash::Hash + Eq,
+    {
+        let count = self
+            .read_u16()
+            .expect("Erreur lors de la lecture de 'count'");
+        let _ = self.read_u16().expect("table size issue");
+        let mut dictionary: HashMap<K, V> = HashMap::new();
+        dictionary = HashMap::with_capacity(count as usize);
+
+        for _ in 0..count {
+            let key = key_reader(self).expect("[read_dictionary] key_reader issue");
+            let value = value_reader(self).expect("[read_dictionary] value_reader issue");
+            dictionary.entry(key).insert_entry(value);
+        }
+
+        Ok(dictionary)
     }
 
     pub fn read_multi_dictionary<K, V>(
