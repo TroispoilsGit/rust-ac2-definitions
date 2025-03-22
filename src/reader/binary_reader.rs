@@ -346,8 +346,7 @@ impl BinaryReader {
             .read_u16()
             .expect("Erreur lors de la lecture de 'count'");
         let _ = self.read_u16().expect("table size issue");
-        let mut dictionary: HashMap<K, V> = HashMap::new();
-        dictionary = HashMap::with_capacity(count as usize);
+        let mut dictionary = HashMap::with_capacity(count as usize);
 
         for _ in 0..count {
             let key = key_reader(self).expect("[read_dictionary] key_reader issue");
@@ -370,8 +369,7 @@ impl BinaryReader {
             .read_u16()
             .expect("Erreur lors de la lecture de 'count'");
         let _ = self.read_u16().expect("table size issue");
-        let mut dictionary: HashMap<K, Vec<V>> = HashMap::new();
-        dictionary = HashMap::with_capacity(count as usize);
+        let mut dictionary = HashMap::with_capacity(count as usize);
 
         for _ in 0..count {
             let key = key_reader(self).expect("[read_multi_dictionary] key_reader issue");
